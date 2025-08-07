@@ -25,10 +25,11 @@ class CountDownText extends StatefulWidget {
     this.minutesTextShort = " m ",
     this.secondsTextShort = " s ",
     this.endingText = 'left',
+    this.onCountdownEnd
   }) : super(key: key);
 
-  final DateTime? due;
-  final String? finishedText;
+  final DateTime due;
+  final String finishedText;
   final bool? longDateName;
   final bool? showLabel;
   final TextStyle? style;
@@ -40,6 +41,7 @@ class CountDownText extends StatefulWidget {
   final String hoursTextShort;
   final String minutesTextShort;
   final String secondsTextShort;
+  final VoidCallback? onCountdownEnd;
 
   /// Makes text to show only the biggest time unit. Starting from days left, then hours etc...
   final bool collapsing;
@@ -52,28 +54,15 @@ class CountDownText extends StatefulWidget {
 }
 
 class _CountDownTextState extends State<CountDownText> {
-  Timer? timer;
+  Timer? _timer;
+  String _timerText = "";
 
   @override
   void initState() {
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {});
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    timer!.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      CountDown().timeLeft(
-        widget.due!,
-        widget.finishedText!,
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final text = CountDown().timeLeft(
+        widget.due,
+        widget.finishedText,
         widget.daysTextLong,
         widget.hoursTextLong,
         widget.minutesTextLong,
@@ -86,7 +75,29 @@ class _CountDownTextState extends State<CountDownText> {
         showLabel: widget.showLabel,
         collapsing: widget.collapsing,
         endingText: widget.endingText,
-      ),
+      );
+
+      setState(() {
+        _timerText = text;
+      });
+
+      if (_timerText == widget.finishedText) {
+        widget.onCountdownEnd?.call();
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      _timerText,
       style: widget.style,
     );
   }
