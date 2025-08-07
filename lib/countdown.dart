@@ -75,8 +75,7 @@ class CountDown {
     }
     if (_timeUntilDue.inSeconds < 1) {
       retVal = finishedText;
-    }
-    else if (collapsing) {
+    } else if (collapsing) {
       retVal += endingText;
     }
     return retVal;

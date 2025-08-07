@@ -25,7 +25,7 @@ class CountDownText extends StatefulWidget {
     this.minutesTextShort = " m ",
     this.secondsTextShort = " s ",
     this.endingText = 'left',
-    this.onCountdownEnd
+    this.onCountdownEnd,
   }) : super(key: key);
 
   final DateTime due;
@@ -59,27 +59,10 @@ class _CountDownTextState extends State<CountDownText> {
 
   @override
   void initState() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      final text = CountDown().timeLeft(
-        widget.due,
-        widget.finishedText,
-        widget.daysTextLong,
-        widget.hoursTextLong,
-        widget.minutesTextLong,
-        widget.secondsTextLong,
-        widget.daysTextShort,
-        widget.hoursTextShort,
-        widget.minutesTextShort,
-        widget.secondsTextShort,
-        longDateName: widget.longDateName,
-        showLabel: widget.showLabel,
-        collapsing: widget.collapsing,
-        endingText: widget.endingText,
-      );
+    _updateTimerText();
 
-      setState(() {
-        _timerText = text;
-      });
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _updateTimerText();
 
       if (_timerText == widget.finishedText) {
         widget.onCountdownEnd?.call();
@@ -100,5 +83,28 @@ class _CountDownTextState extends State<CountDownText> {
       _timerText,
       style: widget.style,
     );
+  }
+
+  void _updateTimerText() {
+    final text = CountDown().timeLeft(
+      widget.due,
+      widget.finishedText,
+      widget.daysTextLong,
+      widget.hoursTextLong,
+      widget.minutesTextLong,
+      widget.secondsTextLong,
+      widget.daysTextShort,
+      widget.hoursTextShort,
+      widget.minutesTextShort,
+      widget.secondsTextShort,
+      longDateName: widget.longDateName,
+      showLabel: widget.showLabel,
+      collapsing: widget.collapsing,
+      endingText: widget.endingText,
+    );
+
+    setState(() {
+      _timerText = text;
+    });
   }
 }
